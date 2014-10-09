@@ -1,0 +1,3 @@
+* move camera on player
+* smooth player movement on tiles
+* collision detection

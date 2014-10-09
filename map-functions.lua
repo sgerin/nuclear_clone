@@ -48,3 +48,10 @@ function drawMap()
     end
   end
 end
+
+function draw_map(graph, x_offset, y_offset)
+	for _, node in pairs(graph) do
+        local y,x = node.y-tileheight/2, node.x-tilewidth/2 --(rowIndex-1)*tileW, (columnIndex-1)*tileH
+        love.graphics.draw(tileset, quads[node.type], x+x_offset, y+y_offset)
+	end
+end

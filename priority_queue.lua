@@ -18,12 +18,18 @@ function siftdown(i)
 			swap(i, bigger)
 			siftdown(bigger)
 		end
+	else
+		print("PROBLEM siftdown")
+		print(i)
+		print(queue.heap_size)
 	end
 end
 
 function siftup(i)
 	if i > queue.heap_size then
-		print("PROBLEM siftup\n")
+		print("PROBLEM siftup")
+		print(i)
+		print(queue.heap_size)
 		return
 	end
 	s1 = queue[i];
@@ -67,9 +73,12 @@ function extract_max()
 	max = queue[1]
 	max.heap_index = nil
  	queue[1] = queue[queue.heap_size]
+	queue[1].heap_index = 1
 	queue[queue.heap_size] = nil
 	queue.heap_size = queue.heap_size-1
-	siftdown(1)
+	if queue.heap_size ~= 0 then
+		siftdown(1)
+	end
 	return max
 end
 	
@@ -97,19 +106,29 @@ end
 
 function remove(node)
 	index = node.heap_index
-	if not index then 
+	if not index or not queue[index] then 
 		return
 	end
-	queue[index] = queue[queue.heap_size]
-	queue[queue.heap_size] = nil
-	queue.heap_size = queue.heap_size - 1
-	node.heap_index = nil
-	if index == 1 then
-		siftdown(i)
-	elseif queue[index].f < queue[parent(index)].f then
-		siftup(i)
-	elseif queue[index].f > queue[right(index)].f or queue[index].f > queue[right(index)].f then
-		siftdown(i)
+	if index == queue.heap_size then
+		queue[index] = nil
+		queue.heap_size = queue.heap_size - 1
+	else
+		queue[index] = queue[queue.heap_size]
+		queue[index].heap_index = index
+		queue[queue.heap_size] = nil
+		queue.heap_size = queue.heap_size - 1
+		node.heap_index = nil
+		if index == 1 then
+			siftdown(index)
+		elseif queue[index].f < queue[parent(index)].f then
+			siftup(index)
+		elseif index ~= queue.heap_size then
+			if right(index) <= queue.heap_size and queue[index].f > queue[right(index)].f then
+				siftdown(index)
+			elseif left(index) <= queue.heap_size and queue[index].f > queue[left(index)].f then
+				siftdown(index)
+			end
+		end
 	end
 end
 
