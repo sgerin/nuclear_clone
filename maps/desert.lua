@@ -1,42 +1,24 @@
 local tileString = [[
-oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
-o                                                                            o
-o                                                                            o
-o   r            ooo                                                         o
-o   r            o o                                                         o
-o   r     o      o o                                                         o
-o   r     o      o o                                                         o
-o   r     o      o o                                                         o
-o   r     o      o o                                                         o
-o   r     o      o o                                                         o
-o         o      ooo                                                         o
-o         o    rrr                                                           o
-o              rrr                                                           o
-o   rrrrrrrrrrrrrr                                                           o
-o   rrrrrrrrrrrrrr                                                           o
-o                  b                                                         o
-o                                                                            o
-o                                                                            o
-o                                                                            o
-o                                                                            o
-o                                                                            o
-o                                                                            o
-o                                                                            o
-o                                                                            o
-o                                                                            o
-o                                                                            o
-o                                                                            o
-o                                                                            o
-o                                                                            o
-o                                                                            o
-o                                                                            o
-o                                                                            o
-o                                                                            o
-o                                                                            o
-o                                                                            o
-o                                                                            o
-o                                                                            o
-oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooo
+o                            o
+o                            o
+o   r            ooo     o   o
+o   r            o o     o   o
+o   r     o      o o     o   o
+o   r     o      o o     o   o
+o   r     o      o o     o   o
+o   r     o      o o     o   o
+o   r     o      o o     o   o
+o         o      ooo     o   o
+o         o    rrr       o   o
+o              rrr       o   o
+o   rrrrrrrrrrrrrr       o   o
+o   rrrrrrrrrrrrrr       o   o
+o                  b     o   o
+o                        o   o
+o                        o   o
+o                            o
+oooooooooooooooooooooooooooooo
 ]]
 
 --[[local tileString = [[

@@ -1,3 +1,8 @@
-* move camera on player
+Urgent
+* fix A* heuristics
 * smooth player movement on tiles
 * collision detection
+
+If time left
+* move camera on player or tile-based scrolling
+* autotiler

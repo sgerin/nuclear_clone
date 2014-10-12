@@ -43,7 +43,7 @@ function build_graph(tiletable, tilewidth, tileheight)
 					node.adj[index + w] = true
 				end
 				--8 adjacent remaining neighbours
-				if columnIndex ~= 1 and rowIndex ~= 1 and graph[index-w-1].type ~= "o" then
+				--[[if columnIndex ~= 1 and rowIndex ~= 1 and graph[index-w-1].type ~= "o" then
 					node.adj[index - w - 1] = true
 				end
 				if columnIndex ~= w and rowIndex ~= 1 and graph[index-w+1].type ~= "o" then
@@ -54,17 +54,17 @@ function build_graph(tiletable, tilewidth, tileheight)
 				end
 				if rowIndex ~= h and columnIndex ~= w and graph[index+w+1].type ~= "o"  then
 					node.adj[index + w + 1] = true
-				end
+				end]]--
 			end
 			for k, v in pairs(node.adj) do
 				if graph[k].type == "r" and node.type == "r" then
-					node.cost[k] = 14
-				elseif graph[k].type == " " and node.type == "r" then
-					node.cost[k] = 14
-				elseif graph[k].type == "r" and node.type == " " then
-					node.cost[k] = 14
-				else
 					node.cost[k] = 10
+				elseif graph[k].type == " " and node.type == "r" then
+					node.cost[k] = 10
+				elseif graph[k].type == "r" and node.type == " " then
+					node.cost[k] = 10
+				else
+					node.cost[k] = 1
 				end
 			end
 			index = index+1
