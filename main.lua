@@ -26,6 +26,8 @@ function love.load()
 	player_node = find_player()
 	player = {}
 	player.velocity = 500
+	player.x_dir = 0
+	player.y_dir = 0
 	player.x, player.y = get_node_center(player_node)
 	ennemies = {}
 	start_is_defined = false
@@ -37,23 +39,28 @@ function love.load()
 	changed_goal = false
 end
 
-function love.draw()
-	--drawMap()
+function love.draw()	
 	draw_map(graph, x_offset, y_offset)
+	love.graphics.rectangle("fill", player.x+x_dir, player.y+y_dir, 8, 8)
+	
 	if paths and paths.computed then
-		for _, path in ipairs(paths) do
-			for k, v in pairs(path) do
-				current = path[k]
-				next = path[k+1]
-				if current and next then
-					love.graphics.line(current.x+x_offset, current.y+y_offset, next.x+x_offset, next.y+y_offset)
+		for k1, path in ipairs(paths) do
+			if ennemies[k1].alive then
+				for k, v in pairs(path) do
+					current = path[k]
+					next = path[k+1]
+					if current and next then
+						love.graphics.line(current.x+x_offset, current.y+y_offset, next.x+x_offset, next.y+y_offset)
+					end
 				end
 			end
 		end
 		if start_is_defined == true then
 			--love.graphics.circle( "fill", start.x+x_offset, start.y+y_offset, 7, 100 )
 			for k, ennemy in ipairs(ennemies) do
-				love.graphics.rectangle("fill", ennemy.node.x+x_offset-tilewidth/2, ennemy.node.y+y_offset-tileheight/2, tilewidth, tileheight)
+				if ennemy.alive then
+					love.graphics.rectangle("fill", ennemy.node.x+x_offset-tilewidth/2, ennemy.node.y+y_offset-tileheight/2, tilewidth, tileheight)
+				end
 			end
 		end
 	else
@@ -84,23 +91,65 @@ function love.update(dt)
 	end ]]
 	if player_node and ennemies.number ~= 0 and (changed_start or changed_goal) then
 		for k, ennemy in ipairs(ennemies) do
-			paths[k] = a_star(graph, ennemy.node, player_node)
-			paths.computed = true
+			if ennemy.alive then
+				paths[k] = a_star(graph, ennemy.node, player_node)
+				paths.computed = true
+			end
 		end
 		changed_start = false
 		changed_goal = false
 	end
-	if not joystick then return end
+
 	local x = player.x
 	local y = player.y
-	if math.abs(joystick:getAxis(1)) > 0.2 then
-		x = x + dt*joystick:getAxis(1)*player.velocity
-	end
-	if math.abs(joystick:getAxis(2)) > 0.2 then
-		y = y + dt*joystick:getAxis(2)*player.velocity
-	end
-	if joystick:isGamepadDown("a") then
-		player_attack()
+	
+	if joystick then
+		--if math.abs(joystick:getAxis(1)) > 0.2 then
+		--	x = x + dt*joystick:getAxis(1)*player.velocity
+		--end
+		--if math.abs(joystick:getAxis(2)) > 0.2 then
+		--	y = y + dt*joystick:getAxis(2)*player.velocity
+		--end
+		x_dir = 0
+		y_dir = 0
+		
+		if math.abs(joystick:getGamepadAxis("leftx")) > 0.2 then
+			x = x + dt*joystick:getGamepadAxis("leftx")*player.velocity
+		end
+		if math.abs(joystick:getGamepadAxis("lefty")) > 0.2 then
+			y = y + dt*joystick:getGamepadAxis("lefty")*player.velocity
+		end
+		if math.abs(joystick:getGamepadAxis("rightx")) > 0.2 then
+			x_dir = dt * 25 * joystick:getGamepadAxis("rightx") * window_width/2
+		end
+		if math.abs(joystick:getGamepadAxis("righty")) > 0.2 then
+			y_dir = dt * 25 * joystick:getGamepadAxis("righty") * window_height/2
+		end
+		print(x_dir, y_dir)
+		local angle = math.atan2((y_dir - player.y), (x_dir - player.x))
+		local dx = dt * math.cos(angle)
+		local dy = dt * math.sin(angle)
+		--print(dx)
+		
+		if joystick:isGamepadDown("a") then
+			player_attack()
+		end
+	else
+		if love.keyboard.isDown("right") then
+			x = x + dt*player.velocity
+		end
+		if love.keyboard.isDown("left") then
+			x = x - dt*player.velocity
+		end
+		if love.keyboard.isDown("up") then
+			y = y - dt*player.velocity
+		end
+		if love.keyboard.isDown("down") then
+			y = y + dt*player.velocity
+		end
+		if love.keyboard.isDown(" ") then
+			player_attack()
+		end
 	end
 		
 	--if(math.abs(joystick:getAxis(4)) > 0.2) then
@@ -136,6 +185,7 @@ function place_ennemies(number)
 		ennemies[i] = {}
 		ennemies[i].life = 1
 		ennemies[i].node = node
+		ennemies[i].alive = true
 	end
 	start_is_defined = true
 	changed_start = true
@@ -166,13 +216,14 @@ end
 
 function love.mousepressed(x, y, button)
 	mouse_pressed = true
+	print("mouse position", x, y)
 end
 
 function love.mousereleased(x, y, button)
 	mouse_pressed = false
 end
 
-function love.keypressed(key, isrepeat)
+--[[function love.keypressed(key, isrepeat)
 	local old_player_node = player_node		
 	local index = player_node.index
 	local new_index = nil
@@ -209,7 +260,7 @@ function love.keypressed(key, isrepeat)
 		changed_goal = true
 	end
 	neighbour = nil
-end
+end]]--
 
 function get_node_center(node)
 	return node.x, node.y
@@ -242,12 +293,15 @@ function player_attack()
 	for k, ennemy in ipairs(ennemies) do
 		if ennemy.node.x < player_node.x+50 and ennemy.node.x > player_node.x-50 and ennemy.node.y < player_node.y+50 and ennemy.node.y > player_node.y-50 then
 			hurt_ennemy(ennemy, k)
+			print("ennemy node center", ennemy.node.x, ennemy.node.y)
 		end
 	end
 	--table.sort(dead_ennemies)
 	for k, v in pairs(dead_ennemies) do
-		table.remove(ennemies, v)
-		table.remove(paths, v)
+		--table.remove(ennemies, v)
+		--table.remove(paths, v)
+		ennemies[v].alive = false
+		--paths[v].valid = false
 		ennemies.number = ennemies.number -1
 	end
 	print(ennemies.number)
